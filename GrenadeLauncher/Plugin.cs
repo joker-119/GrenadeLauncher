@@ -32,7 +32,7 @@ namespace GrenadeLauncher
 		public Methods Functions { get; private set; }
 
 		[ConfigOption]
-		public const int LauncherID = 106;
+		public const int LauncherID = 107;
 
 		[ConfigOption]
 		public bool Enabled = true;
