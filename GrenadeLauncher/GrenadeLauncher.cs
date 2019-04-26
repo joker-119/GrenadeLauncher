@@ -18,13 +18,24 @@ namespace GrenadeLauncher
 			Player ply = new SmodPlayer(base.PlayerObject);
 
 			ply.PersonalBroadcast(5, "You have picked up a <b>Grenade Launcher</b>!", false);
+			GrenadeLauncherPlugin.grenaders.Add(ply.PlayerId);
 
 			return base.OnPickup();
+		}
+
+		public override bool OnDrop()
+		{
+			Player ply = new SmodPlayer(base.PlayerObject);
+
+			GrenadeLauncherPlugin.grenaders.Remove(ply.PlayerId);
+
+			return base.OnDrop();
 		}
 
 		protected override void OnValidShoot(UnityEngine.GameObject target, ref float damage)
 		{
 			SmodPlayer ply;
+
 			try { ply = new SmodPlayer(target); }
 			catch { return; }
 

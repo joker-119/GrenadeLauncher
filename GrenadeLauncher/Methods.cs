@@ -21,9 +21,10 @@ namespace GrenadeLauncher
 			foreach (Smod2.API.Item item in player.GetInventory().Where(x => x.ItemType == GrenadeLauncherPlugin.Handler.DefaultType))
 				item.Remove();
 
-			Items.Handlers[GrenadeLauncherPlugin.LauncherID].Create(((GameObject)player.GetGameObject()).GetComponent<Inventory>());
+			Items.Handlers[plugin.LauncherID].Create(((GameObject)player.GetGameObject()).GetComponent<Inventory>());
 
 			player.PersonalBroadcast(5, "You have spawned with a grenade launcher!", false);
+			GrenadeLauncherPlugin.grenaders.Add(player.PlayerId);
 		}
 	}
 }

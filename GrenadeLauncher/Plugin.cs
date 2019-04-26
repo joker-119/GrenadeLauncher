@@ -32,7 +32,7 @@ namespace GrenadeLauncher
 		public Methods Functions { get; private set; }
 
 		[ConfigOption]
-		public const int LauncherID = 107;
+		public readonly int LauncherID = 107;
 
 		[ConfigOption]
 		public bool Enabled = true;
@@ -49,16 +49,19 @@ namespace GrenadeLauncher
 		[ConfigOption]
 		public int WorldSpawnCount = 1;
 
-		[ConfigOption]
+		[ConfigOption("ntf_spawn")]
 		public bool NTFSpawn = false;
 
-		[ConfigOption]
+		[ConfigOption("ci_spawn")]
 		public bool CISpawn = true;
 
 		[ConfigOption]
-		public static List<string> SpawnLocations = new List<string>() { "173" };
+		public string[] SpawnLocations = { "173" };
+
 
 		public Random Gen = new System.Random();
+
+		public static List<int> grenaders = new List<int>();
 
 		public override void OnDisable()
 		{
@@ -76,13 +79,13 @@ namespace GrenadeLauncher
 
 			Functions = new Methods(this);
 
-			Handler = new CustomWeaponHandler<GrenadeLauncher>(GrenadeLauncherPlugin.LauncherID)
+			Handler = new CustomWeaponHandler<GrenadeLauncher>(LauncherID)
 			{
 				DefaultType = ItemType.LOGICER,
 				AmmoName = "Launchable Grenades"
 			};
 			Handler.Register();
-			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, (int)ItemType.LOGICER, GrenadeLauncherPlugin.LauncherID, 1));
+			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, (int)ItemType.LOGICER, LauncherID, 1));
 		}
 	}
 }

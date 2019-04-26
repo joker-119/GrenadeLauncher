@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2DBA3CEF-4BAA-4093-BF93-A257CBC89981}</ProjectGuid>
+    <ProjectGuid>{6026FF10-5C31-4F1B-9578-B09D920FB969}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GrenadeLauncher</RootNamespace>
