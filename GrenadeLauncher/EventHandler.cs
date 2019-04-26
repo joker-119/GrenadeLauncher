@@ -66,8 +66,10 @@ namespace GrenadeLauncher
 
 		public void OnShoot(PlayerShootEvent ev)
 		{
-			var player = (GameObject) ev.Player.GetGameObject();
-			if (GrenadeLauncherPlugin.grenaders.Contains(ev.Player.PlayerId) && ev.Player.GetCurrentItem().ItemType == GrenadeLauncherPlugin.Handler.DefaultType)
+			var player = (GameObject)ev.Player.GetGameObject();
+			CustomItem item = ev.Player?.HeldCustomItem();
+
+			if (item != null && item.Handler.PsuedoType == plugin.LauncherID)
 				ThrowGrenade(ItemType.FRAG_GRENADE, false, Vector.Up, false, player.transform.position, false, 0.0f, player, false);
 		}
 
@@ -92,7 +94,7 @@ namespace GrenadeLauncher
 				plugin.Functions.GiveLauncher(ev.PlayerList[r]);
 			}
 		}
-			public void ThrowGrenade(ItemType grenadeType, bool isCustomDirection, Vector direction, bool isEnvironmentallyTriggered, Vector3 position, bool isCustomForce, float throwForce, GameObject player, bool slowThrow = false)
+		public void ThrowGrenade(ItemType grenadeType, bool isCustomDirection, Vector direction, bool isEnvironmentallyTriggered, Vector3 position, bool isCustomForce, float throwForce, GameObject player, bool slowThrow = false)
 		{
 			int num = 0;
 			GameObject truePly = player;
