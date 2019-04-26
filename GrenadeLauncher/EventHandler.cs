@@ -10,6 +10,7 @@ using ItemManager;
 using ItemManager.Utilities;
 using UnityEngine;
 using MEC;
+using RemoteAdmin;
 
 namespace GrenadeLauncher
 {
@@ -65,8 +66,9 @@ namespace GrenadeLauncher
 
 		public void OnShoot(PlayerShootEvent ev)
 		{
+			var player = (GameObject) ev.Player.GetGameObject();
 			if (GrenadeLauncherPlugin.grenaders.Contains(ev.Player.PlayerId) && ev.Player.GetCurrentItem().ItemType == GrenadeLauncherPlugin.Handler.DefaultType)
-				ev.Player.ThrowGrenade(ItemType.FRAG_GRENADE, false, Vector.Zero, false, ev.Player.GetPosition(), true, 0.2f, false);
+				ThrowGrenade(ItemType.FRAG_GRENADE, false, Vector.Up, false, player.transform.position, false, 0.0f, player, false);
 		}
 
 		public void OnPlayerDie(PlayerDeathEvent ev)
@@ -89,6 +91,29 @@ namespace GrenadeLauncher
 
 				plugin.Functions.GiveLauncher(ev.PlayerList[r]);
 			}
+		}
+			public void ThrowGrenade(ItemType grenadeType, bool isCustomDirection, Vector direction, bool isEnvironmentallyTriggered, Vector3 position, bool isCustomForce, float throwForce, GameObject player, bool slowThrow = false)
+		{
+			int num = 0;
+			GameObject truePly = player;
+			GrenadeManager component = player.GetComponent<GrenadeManager>();
+			Vector3 forward = truePly.GetComponent<Scp049PlayerScript>().plyCam.transform.forward;
+			Grenade component2 = UnityEngine.Object.Instantiate<GameObject>(component.availableGrenades[num].grenadeInstance).GetComponent<Grenade>();
+			component2.gameObject.AddComponent<GrenadeScript>();
+			GrenadeScript script = component2.GetComponent<GrenadeScript>();
+			script.thrower = player;
+			component2.id = truePly.GetComponent<QueryProcessor>().PlayerId + ":" + (component.smThrowInteger + 4096);
+			GrenadeManager.grenadesOnScene.Add(component2);
+			component2.SyncMovement(component.availableGrenades[num].GetStartPos(truePly), (truePly.GetComponent<Scp049PlayerScript>().plyCam.transform.forward + Vector3.up / 4f).normalized * throwForce, Quaternion.Euler(component.availableGrenades[num].startRotation), component.availableGrenades[num].angularVelocity);
+			GrenadeManager grenadeManager = component;
+			int id = num;
+			int playerId = truePly.GetComponent<QueryProcessor>().PlayerId;
+			GrenadeManager grenadeManager2 = component;
+			int smThrowInteger = grenadeManager2.smThrowInteger;
+			grenadeManager2.smThrowInteger = smThrowInteger + 1;
+			grenadeManager.CallRpcThrowGrenade(id, playerId, smThrowInteger + 4096, forward, true, position, slowThrow, 0);
+			component2.SyncMovement(component.availableGrenades[num].GetStartPos(truePly), (truePly.GetComponent<Scp049PlayerScript>().plyCam.transform.forward + Vector3.up / 4f).normalized * throwForce, Quaternion.Euler(component.availableGrenades[num].startRotation), component.availableGrenades[num].angularVelocity);
+			component.CallRpcUpdate(component2.id, component.availableGrenades[num].GetStartPos(truePly) + Vector3.up * 2.8380203f, Quaternion.Euler(component.availableGrenades[num].startRotation), (truePly.GetComponent<Scp049PlayerScript>().plyCam.transform.forward + Vector3.up / 4f).normalized * throwForce * forward.magnitude, component.availableGrenades[num].angularVelocity);
 		}
 	}
 
