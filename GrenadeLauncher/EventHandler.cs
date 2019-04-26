@@ -111,7 +111,7 @@ namespace GrenadeLauncher
 			GrenadeManager grenadeManager2 = component;
 			int smThrowInteger = grenadeManager2.smThrowInteger;
 			grenadeManager2.smThrowInteger = smThrowInteger + 1;
-			grenadeManager.CallRpcThrowGrenade(id, playerId, smThrowInteger + 4096, forward, true, position, slowThrow, 0);
+			grenadeManager.CallRpcThrowGrenade(id, playerId, smThrowInteger + 4096, forward, false, position, slowThrow, 0);
 			component2.SyncMovement(component.availableGrenades[num].GetStartPos(truePly), (truePly.GetComponent<Scp049PlayerScript>().plyCam.transform.forward + Vector3.up / 4f).normalized * throwForce, Quaternion.Euler(component.availableGrenades[num].startRotation), component.availableGrenades[num].angularVelocity);
 			component.CallRpcUpdate(component2.id, component.availableGrenades[num].GetStartPos(truePly) + Vector3.up * 2.8380203f, Quaternion.Euler(component.availableGrenades[num].startRotation), (truePly.GetComponent<Scp049PlayerScript>().plyCam.transform.forward + Vector3.up / 4f).normalized * throwForce * forward.magnitude, component.availableGrenades[num].angularVelocity);
 		}

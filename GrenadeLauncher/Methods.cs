@@ -16,7 +16,7 @@ namespace GrenadeLauncher
 
 		public IEnumerator<float> GiveLauncher(Player player)
 		{
-			yield return Timing.WaitForSeconds(1);
+			yield return Timing.WaitForSeconds(1f);
 
 			foreach (Smod2.API.Item item in player.GetInventory().Where(x => x.ItemType == GrenadeLauncherPlugin.Handler.DefaultType))
 				item.Remove();
