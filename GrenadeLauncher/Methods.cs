@@ -1,9 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
-using Smod2;
 using Smod2.API;
 using ItemManager;
-using ItemManager.Utilities;
 using MEC;
 using UnityEngine;
 
@@ -18,13 +16,12 @@ namespace GrenadeLauncher
 		{
 			yield return Timing.WaitForSeconds(1f);
 
-			foreach (Smod2.API.Item item in player.GetInventory().Where(x => x.ItemType == GrenadeLauncherPlugin.Handler.DefaultType))
+			foreach (Smod2.API.Item item in player.GetInventory().Where(x => x.ItemType == plugin.Handler.DefaultType))
 				item.Remove();
 
-			Items.Handlers[plugin.LauncherID].Create(((GameObject)player.GetGameObject()).GetComponent<Inventory>());
+			Items.Handlers[plugin.LauncherId].Create(((GameObject)player.GetGameObject()).GetComponent<Inventory>());
 
 			player.PersonalBroadcast(5, "You have spawned with a grenade launcher!", false);
-			GrenadeLauncherPlugin.grenaders.Add(player.PlayerId);
 		}
 	}
 }

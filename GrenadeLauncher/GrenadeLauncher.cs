@@ -1,10 +1,6 @@
-using Smod2;
 using Smod2.API;
 using ServerMod2.API;
 using ItemManager;
-using ItemManager.Recipes;
-using ItemManager.Utilities;
-using System.Collections.Generic;
 
 namespace GrenadeLauncher
 {
@@ -15,21 +11,11 @@ namespace GrenadeLauncher
 
 		public override bool OnPickup()
 		{
-			Player ply = new SmodPlayer(base.PlayerObject);
+			Player ply = new SmodPlayer(PlayerObject);
 
 			ply.PersonalBroadcast(5, "You have picked up a <b>Grenade Launcher</b>!", false);
-			GrenadeLauncherPlugin.grenaders.Add(ply.PlayerId);
 
 			return base.OnPickup();
-		}
-
-		public override bool OnDrop()
-		{
-			Player ply = new SmodPlayer(base.PlayerObject);
-
-			GrenadeLauncherPlugin.grenaders.Remove(ply.PlayerId);
-
-			return base.OnDrop();
 		}
 
 		protected override void OnValidShoot(UnityEngine.GameObject target, ref float damage)

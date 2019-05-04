@@ -37,12 +37,12 @@
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\References\Assembly-CSharp.dll</HintPath>
     </Reference>
-	<Reference Include="Assembly-CSharp-firstpass">
+    <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\References\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-	<Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <HintPath>..\References\Assembly-CSharp-firstpass.dll</HintPath>
-	</Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\References\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
     <Reference Include="ItemManager">
       <HintPath>..\References\ItemManager.dll</HintPath>
     </Reference>
@@ -90,7 +90,7 @@
     <Compile Include="GrenadeScript.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="GrenadeLauncher.cs" />
-	<Compile Include="Methods.cs" />
+    <Compile Include="Methods.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

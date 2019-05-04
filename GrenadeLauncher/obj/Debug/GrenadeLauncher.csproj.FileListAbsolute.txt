@@ -1,7 +1,0 @@
-/home/Joker/SCP Plugins/bin/GrenadeLauncher/GrenadeLauncher.dll
-/home/Joker/SCP Plugins/bin/GrenadeLauncher/GrenadeLauncher.pdb
-/home/Joker/SCP Plugins/GrenadeLauncher/GrenadeLauncher/obj/Debug/GrenadeLauncher.csprojAssemblyReference.cache
-/home/Joker/SCP Plugins/GrenadeLauncher/GrenadeLauncher/obj/Debug/GrenadeLauncher.csproj.CoreCompileInputs.cache
-/home/Joker/SCP Plugins/GrenadeLauncher/GrenadeLauncher/obj/Debug/GrenadeLauncher.csproj.CopyComplete
-/home/Joker/SCP Plugins/GrenadeLauncher/GrenadeLauncher/obj/Debug/GrenadeLauncher.dll
-/home/Joker/SCP Plugins/GrenadeLauncher/GrenadeLauncher/obj/Debug/GrenadeLauncher.pdb

@@ -1,20 +1,17 @@
 using System.Linq;
-using Smod2;
 using Smod2.API;
 using Smod2.Events;
-using Smod2.EventSystem;
 using Smod2.EventHandlers;
 using Smod2.EventSystem.Events;
 using System.Collections.Generic;
 using ItemManager;
-using ItemManager.Utilities;
 using UnityEngine;
 using MEC;
 using RemoteAdmin;
 
 namespace GrenadeLauncher
 {
-	public class EventHandler : IEventHandlerTeamRespawn, IEventHandlerRoundStart, IEventHandlerShoot, IEventHandlerWaitingForPlayers, IEventHandlerPlayerDie
+	public class EventHandler : IEventHandlerTeamRespawn, IEventHandlerRoundStart, IEventHandlerShoot, IEventHandlerWaitingForPlayers
 	{
 		private readonly GrenadeLauncherPlugin plugin;
 		public EventHandler(GrenadeLauncherPlugin plugin) => this.plugin = plugin;
@@ -26,12 +23,11 @@ namespace GrenadeLauncher
 
 		public void OnRoundStart(RoundStartEvent ev)
 		{
-			RandomItemSpawner ris = UnityEngine.Object.FindObjectOfType<RandomItemSpawner>();
+			RandomItemSpawner ris = Object.FindObjectOfType<RandomItemSpawner>();
 
 			List<SpawnLocation> spawns = new List<SpawnLocation>();
 
 			for (int i = 0; i < plugin.WorldSpawnCount; i++)
-			{
 				foreach (string raw in plugin.SpawnLocations)
 				{
 					string sl = raw.ToLower();
@@ -56,79 +52,71 @@ namespace GrenadeLauncher
 							plugin.Info("Invalid spawn location.");
 							break;
 					}
+
+					if (choices == null || choices.Count == 0)
+					{
+						plugin.Info("Invalid spawn location: " + sl);
+						return;
+					}
+					
 					spawns.Add(choices[plugin.Gen.Next(0, choices.Count)]);
 				}
-			}
 
 			foreach (SpawnLocation sl in spawns)
-				GrenadeLauncherPlugin.Handler.CreateOfType(sl.Position, sl.Rotation);
+				plugin.Handler.CreateOfType(sl.Position, sl.Rotation);
 		}
 
 		public void OnShoot(PlayerShootEvent ev)
 		{
-			var player = (GameObject)ev.Player.GetGameObject();
 			CustomItem item = ev.Player?.HeldCustomItem();
-			if (item != null && item.Handler.PsuedoType == plugin.LauncherID)
+			if (item != null && item.Handler.PsuedoType == plugin.LauncherId)
+			{
+				GameObject player = (GameObject) ev.Player.GetGameObject();
 				ThrowGrenade(ItemType.FRAG_GRENADE, false, Vector.Zero, false, ev.Player.GetPosition(), true, 0.2f, false, player);
-		}
-
-		public void OnPlayerDie(PlayerDeathEvent ev)
-		{
-			if (GrenadeLauncherPlugin.grenaders.Contains(ev.Player.PlayerId))
-				GrenadeLauncherPlugin.grenaders.Remove(ev.Player.PlayerId);
+			}
 		}
 
 		public void OnTeamRespawn(TeamRespawnEvent ev)
 		{
-			if (ev.SpawnChaos && plugin.CISpawn)
+			if (ev.SpawnChaos && plugin.CiSpawn)
 			{
 				int r = plugin.Gen.Next(ev.PlayerList.Count);
 
-				plugin.Functions.GiveLauncher(ev.PlayerList[r]);
+				Timing.RunCoroutine(plugin.Functions.GiveLauncher(ev.PlayerList[r]));
 			}
-			else if (plugin.NTFSpawn)
+			else if (plugin.NtfSpawn)
 			{
 				int r = plugin.Gen.Next(ev.PlayerList.Count);
 
-				plugin.Functions.GiveLauncher(ev.PlayerList[r]);
+				Timing.RunCoroutine(plugin.Functions.GiveLauncher(ev.PlayerList[r]));
 			}
 		}
-			public void ThrowGrenade(ItemType grenadeType, bool isCustomDirection, Vector direction, bool isEnvironmentallyTriggered, Vector position, bool isCustomForce, float throwForce, bool slowThrow, GameObject player)
-			{
-				
-			if (player == null)
-			{
-				return;
-			}
-			if (player.GetComponent<GrenadeManager>() == null)
-			{
-				return;
-			}
+
+		private static void ThrowGrenade(ItemType grenadeType, bool isCustomDirection, Vector direction, bool isEnvironmentallyTriggered, Vector position, bool isCustomForce, float throwForce, bool slowThrow, GameObject player)
+		{
+
+			if (player == null) return;
+			if (player.GetComponent<GrenadeManager>() == null) return;
+			
 			int num = 0;
 			if (grenadeType != ItemType.FRAG_GRENADE)
 			{
-				if (grenadeType == ItemType.FLASHBANG)
-				{
-					num = 1;
-				}
+				if (grenadeType == ItemType.FLASHBANG) num = 1;
 			}
 			else
-			{
 				num = 0;
-			}
+
 			GrenadeManager component = player.GetComponent<GrenadeManager>();
 			Vector3 forward = player.GetComponent<Scp049PlayerScript>().plyCam.transform.forward;
-			if (isCustomDirection)
-			{
+			
+			if (isCustomDirection) 
 				forward = new Vector3(direction.x, direction.y, direction.z);
-			}
-			if (!isCustomForce)
-			{
-				throwForce = ((!slowThrow) ? 1f : 0.5f) * component.availableGrenades[num].throwForce;
-			}
+			if (!isCustomForce) 
+				throwForce = (!slowThrow ? 1f : 0.5f) * component.availableGrenades[num].throwForce;
+			
 			Grenade component2 = UnityEngine.Object.Instantiate<GameObject>(component.availableGrenades[num].grenadeInstance).GetComponent<Grenade>();
 			component2.gameObject.AddComponent<GrenadeScript>();
-			var script = component2.GetComponent<GrenadeScript>();
+			GrenadeScript script = component2.GetComponent<GrenadeScript>();
 			script.thrower = player;
 			component2.id = player.GetComponent<QueryProcessor>().PlayerId + ":" + (component.smThrowInteger + 4096);
 			GrenadeManager.grenadesOnScene.Add(component2);
@@ -149,8 +137,8 @@ namespace GrenadeLauncher
 		public Quaternion Rotation { get; private set; }
 		public SpawnLocation(Vector3 p, Quaternion r)
 		{
-			this.Position = p;
-			this.Rotation = r;
+			Position = p;
+			Rotation = r;
 		}
 	}
 }

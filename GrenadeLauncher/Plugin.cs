@@ -1,15 +1,12 @@
 using Smod2;
 using Smod2.API;
 using Smod2.Config;
-using Smod2.Events;
-using Smod2.Commands;
 using Smod2.Attributes;
 using ItemManager;
 using ItemManager.Recipes;
 using ItemManager.Utilities;
 using System;
 using System.Collections.Generic;
-using MEC;
 
 namespace GrenadeLauncher
 {
@@ -27,12 +24,12 @@ namespace GrenadeLauncher
 
 	public class GrenadeLauncherPlugin : Plugin
 	{
-		public static CustomWeaponHandler<GrenadeLauncher> Handler { get; private set; }
+		public CustomWeaponHandler<GrenadeLauncher> Handler { get; private set; }
 
 		public Methods Functions { get; private set; }
 
 		[ConfigOption]
-		public readonly int LauncherID = 107;
+		public readonly int LauncherId = 107;
 
 		[ConfigOption]
 		public bool Enabled = true;
@@ -50,18 +47,16 @@ namespace GrenadeLauncher
 		public int WorldSpawnCount = 1;
 
 		[ConfigOption("ntf_spawn")]
-		public bool NTFSpawn = false;
+		public bool NtfSpawn = false;
 
 		[ConfigOption("ci_spawn")]
-		public bool CISpawn = true;
+		public bool CiSpawn = true;
 
 		[ConfigOption]
 		public string[] SpawnLocations = { "173" };
 
 
-		public Random Gen = new System.Random();
-
-		public static List<int> grenaders = new List<int>();
+		public Random Gen = new Random();
 
 		public override void OnDisable()
 		{
@@ -75,17 +70,18 @@ namespace GrenadeLauncher
 
 		public override void Register()
 		{
-			AddEventHandlers(new EventHandler(this), Priority.Normal);
+			AddEventHandlers(new EventHandler(this));
 
 			Functions = new Methods(this);
 
-			Handler = new CustomWeaponHandler<GrenadeLauncher>(LauncherID)
+			Handler = new CustomWeaponHandler<GrenadeLauncher>(LauncherId)
 			{
 				DefaultType = ItemType.LOGICER,
-				AmmoName = "Launchable Grenades"
+				AmmoName = "Launchable Grenades",
+				DefaultReserveAmmo = ReserveAmmo
 			};
 			Handler.Register();
-			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, (int)ItemType.LOGICER, LauncherID, 1));
+			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, (int)ItemType.LOGICER, LauncherId, 1));
 		}
 	}
 }
