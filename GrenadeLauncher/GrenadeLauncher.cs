@@ -13,7 +13,7 @@ namespace GrenadeLauncher
 		{
 			Player ply = new SmodPlayer(PlayerObject);
 
-			ply.PersonalBroadcast(5, "You have picked up a <b>Grenade Launcher</b>!", false);
+			ply.PersonalBroadcast(5, "You have picked up a <b>Rocket Launcher</b>!", false);
 
 			return base.OnPickup();
 		}
