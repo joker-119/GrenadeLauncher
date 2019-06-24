@@ -7,22 +7,28 @@ using System.Collections.Generic;
 using ItemManager;
 using UnityEngine;
 using MEC;
-using RemoteAdmin;
+using ServerMod2.API;
+using Smod2;
+
 
 namespace GrenadeLauncher
 {
-	public class EventHandler : IEventHandlerTeamRespawn, IEventHandlerRoundStart, IEventHandlerShoot, IEventHandlerWaitingForPlayers
+	public class EventHandler : IEventHandlerTeamRespawn, IEventHandlerRoundStart, IEventHandlerShoot,
+		IEventHandlerWaitingForPlayers, IEventHandlerRoundEnd
 	{
 		private readonly GrenadeLauncherPlugin plugin;
 		public EventHandler(GrenadeLauncherPlugin plugin) => this.plugin = plugin;
 
 		public void OnWaitingForPlayers(WaitingForPlayersEvent ev)
 		{
-
+			if (!plugin.Enabled)
+				PluginManager.Manager.DisablePlugin(plugin);
+			plugin.started = false;
 		}
 
 		public void OnRoundStart(RoundStartEvent ev)
 		{
+			plugin.started = true;
 			RandomItemSpawner ris = Object.FindObjectOfType<RandomItemSpawner>();
 
 			List<SpawnLocation> spawns = new List<SpawnLocation>();
@@ -37,16 +43,22 @@ namespace GrenadeLauncher
 					switch (sl)
 					{
 						case "049":
-							choices = ris.posIds.Where(x => x.posID == "049_Medkit").Select(x => new SpawnLocation(x.position.position, x.position.rotation)).ToList();
+							choices = ris.posIds.Where(x => x.posID == "049_Medkit")
+								.Select(x => new SpawnLocation(x.position.position, x.position.rotation)).ToList();
 							break;
 						case "173":
-							choices = ris.posIds.Where(x => x.posID == "RandomPistol" && x.position.parent.gameObject.name == "Root_173").Select(x => new SpawnLocation(x.position.position, x.position.rotation)).ToList();
+							choices = ris.posIds
+								.Where(x => x.posID == "RandomPistol" &&
+								            x.position.parent.gameObject.name == "Root_173").Select(x =>
+									new SpawnLocation(x.position.position, x.position.rotation)).ToList();
 							break;
 						case "096":
-							choices = ris.posIds.Where(x => x.posID == "Fireman").Select(x => new SpawnLocation(x.position.position, x.position.rotation)).ToList();
+							choices = ris.posIds.Where(x => x.posID == "Fireman")
+								.Select(x => new SpawnLocation(x.position.position, x.position.rotation)).ToList();
 							break;
 						case "nuke":
-							choices = ris.posIds.Where(x => x.posID == "Nuke").Select(x => new SpawnLocation(x.position.position, x.position.rotation)).ToList();
+							choices = ris.posIds.Where(x => x.posID == "Nuke").Select(x =>
+								new SpawnLocation(x.position.position, x.position.rotation)).ToList();
 							break;
 						default:
 							plugin.Info("Invalid spawn location.");
@@ -58,7 +70,7 @@ namespace GrenadeLauncher
 						plugin.Info("Invalid spawn location: " + sl);
 						return;
 					}
-					
+
 					spawns.Add(choices[plugin.Gen.Next(0, choices.Count)]);
 				}
 
@@ -69,12 +81,34 @@ namespace GrenadeLauncher
 		public void OnShoot(PlayerShootEvent ev)
 		{
 			CustomItem item = ev.Player?.HeldCustomItem();
-			if (item != null && item.Handler.PsuedoType == plugin.LauncherId)
-			{
-				GameObject player = (GameObject) ev.Player.GetGameObject();
-				ThrowGrenade(ItemType.FRAG_GRENADE, false, Vector.Zero, false, ev.Player.GetPosition(), true, 0.2f, false, player);
-			}
+			if (item == null || item.Handler.PsuedoType != plugin.LauncherId) return;
+
+			GameObject player = (GameObject) ev.Player.GetGameObject();
+			Vector3 forward = player.GetComponent<Scp049PlayerScript>().plyCam.transform.forward;
+
+			Vector3 position = player.transform.position;
+			Timing.RunCoroutine(Physics.Raycast(position, forward, out RaycastHit raycast, plugin.MaxRange, kWallMask)
+				? plugin.Functions.Explode(ev.Player, position + forward * raycast.distance, plugin.Delay * raycast.distance)
+				: plugin.Functions.Explode(ev.Player, position + forward * plugin.MaxRange, plugin.Delay * plugin.MaxRange));
+
+			WeaponManager wep = player.GetComponent<WeaponManager>();
+
+			int shots = plugin.Krakatoa;
+
+			for (int i = 0; i < shots; i++)
+				wep.CallRpcConfirmShot(true, wep.curWeapon);
 		}
+
+		public void OnRoundEnd(RoundEndEvent ev)
+		{
+			plugin.started = false;
+		}
+
+		private const int kWallMask = 1 << 30 | // Lockers
+		                              1 << 27 | // Door
+		                              1 << 14 | // Glass
+		                              1 << 9 | // Pickups
+		                              1 << 0; // Default
 
 		public void OnTeamRespawn(TeamRespawnEvent ev)
 		{
@@ -92,43 +126,6 @@ namespace GrenadeLauncher
 			}
 		}
 
-		private static void ThrowGrenade(ItemType grenadeType, bool isCustomDirection, Vector direction, bool isEnvironmentallyTriggered, Vector position, bool isCustomForce, float throwForce, bool slowThrow, GameObject player)
-		{
-
-			if (player == null) return;
-			if (player.GetComponent<GrenadeManager>() == null) return;
-			
-			int num = 0;
-			if (grenadeType != ItemType.FRAG_GRENADE)
-			{
-				if (grenadeType == ItemType.FLASHBANG) num = 1;
-			}
-			else
-				num = 0;
-
-			GrenadeManager component = player.GetComponent<GrenadeManager>();
-			Vector3 forward = player.GetComponent<Scp049PlayerScript>().plyCam.transform.forward;
-			
-			if (isCustomDirection) 
-				forward = new Vector3(direction.x, direction.y, direction.z);
-			if (!isCustomForce) 
-				throwForce = (!slowThrow ? 1f : 0.5f) * component.availableGrenades[num].throwForce;
-			
-			Grenade component2 = UnityEngine.Object.Instantiate<GameObject>(component.availableGrenades[num].grenadeInstance).GetComponent<Grenade>();
-			component2.gameObject.AddComponent<GrenadeScript>();
-			GrenadeScript script = component2.GetComponent<GrenadeScript>();
-			script.thrower = player;
-			component2.id = player.GetComponent<QueryProcessor>().PlayerId + ":" + (component.smThrowInteger + 4096);
-			GrenadeManager.grenadesOnScene.Add(component2);
-			component2.SyncMovement(component.availableGrenades[num].GetStartPos(player), (player.GetComponent<Scp049PlayerScript>().plyCam.transform.forward + Vector3.up / 4f).normalized * throwForce, Quaternion.Euler(component.availableGrenades[num].startRotation), component.availableGrenades[num].angularVelocity);
-			GrenadeManager grenadeManager = component;
-			int id = num;
-			int playerId = player.GetComponent<QueryProcessor>().PlayerId;
-			GrenadeManager grenadeManager2 = component;
-			int smThrowInteger = grenadeManager2.smThrowInteger;
-			grenadeManager2.smThrowInteger = smThrowInteger + 1;
-			grenadeManager.CallRpcThrowGrenade(id, playerId, smThrowInteger + 4096, forward, isEnvironmentallyTriggered, new Vector3(position.x, position.y, position.z), slowThrow, 0);
-		}
 	}
 
 	public struct SpawnLocation

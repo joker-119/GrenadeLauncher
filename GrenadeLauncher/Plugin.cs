@@ -6,7 +6,6 @@ using ItemManager;
 using ItemManager.Recipes;
 using ItemManager.Utilities;
 using System;
-using System.Collections.Generic;
 
 namespace GrenadeLauncher
 {
@@ -15,7 +14,7 @@ namespace GrenadeLauncher
 		name = "Grenade Launcher",
 		description = "A gun that launches grenades.",
 		id = "joker.customitems.GrenadeLauncher",
-		version = "1.0.0",
+		version = "1.0.5",
 		configPrefix = "glauncher",
 		SmodMajor = 3,
 		SmodMinor = 4,
@@ -28,32 +27,29 @@ namespace GrenadeLauncher
 
 		public Methods Functions { get; private set; }
 
-		[ConfigOption]
-		public readonly int LauncherId = 107;
+		[ConfigOption] public readonly int LauncherId = 107;
 
-		[ConfigOption]
-		public bool Enabled = true;
+		[ConfigOption] public bool Enabled = true;
+		[ConfigOption] public bool SerpentsHand = false;
 
-		[ConfigOption]
-		public static float FireRate = 0.25f;
+		[ConfigOption] public float MaxRange = 35f;
+		[ConfigOption] public float Delay = 0.025f;
+		[ConfigOption] public float ExplosionRange = 10f;
+		[ConfigOption] public float ExplosionFalloff = 25f;
+		[ConfigOption] public float ExplosionDamage = 300f;
 
-		[ConfigOption]
-		public static int MagazineSize = 6;
+		[ConfigOption] public static float FireRate = 0.25f;
+		[ConfigOption] public static int MagazineSize = 6;
+		[ConfigOption] public static int ReserveAmmo = 0;
 
-		[ConfigOption]
-		public static int ReserveAmmo = 0;
+		[ConfigOption] public int Krakatoa = 1;
+		[ConfigOption] public int WorldSpawnCount = 1;
 
-		[ConfigOption]
-		public int WorldSpawnCount = 1;
+		[ConfigOption("ntf_spawn")] public bool NtfSpawn = false;
+		[ConfigOption("ci_spawn")] public bool CiSpawn = true;
 
-		[ConfigOption("ntf_spawn")]
-		public bool NtfSpawn = false;
-
-		[ConfigOption("ci_spawn")]
-		public bool CiSpawn = true;
-
-		[ConfigOption]
-		public string[] SpawnLocations = { "173" };
+		[ConfigOption] public string[] SpawnLocations = { "173" };
+		public bool started = false;
 
 
 		public Random Gen = new Random();
