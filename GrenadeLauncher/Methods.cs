@@ -49,6 +49,25 @@ namespace GrenadeLauncher
 			}
 		}
 
+		public ItemType GetItemTypeFromId(int id)
+		{
+			switch (id)
+			{
+				case 16:
+					return ItemType.MICROHID;
+				case 13:
+					return ItemType.COM15;
+				case 20:
+					return ItemType.E11_STANDARD_RIFLE;
+				case 21:
+					return ItemType.P90;
+				case 23:
+					return ItemType.MP4;
+				default:
+					return ItemType.LOGICER;
+			}
+		}
+
 		private bool CheckFriendly(Player shooter, Player target)
 		{
 			if (plugin.started)

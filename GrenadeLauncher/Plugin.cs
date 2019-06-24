@@ -44,6 +44,7 @@ namespace GrenadeLauncher
 
 		[ConfigOption] public int Krakatoa = 1;
 		[ConfigOption] public int WorldSpawnCount = 1;
+		[ConfigOption] public int ShellID = 24;
 
 		[ConfigOption("ntf_spawn")] public bool NtfSpawn = false;
 		[ConfigOption("ci_spawn")] public bool CiSpawn = true;
@@ -72,12 +73,12 @@ namespace GrenadeLauncher
 
 			Handler = new CustomWeaponHandler<GrenadeLauncher>(LauncherId)
 			{
-				DefaultType = ItemType.LOGICER,
+				DefaultType = Functions.GetItemTypeFromId(24),
 				AmmoName = "Launchable Grenades",
 				DefaultReserveAmmo = ReserveAmmo
 			};
 			Handler.Register();
-			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, (int)ItemType.LOGICER, LauncherId, 1));
+			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, ShellID, LauncherId, 1));
 		}
 	}
 }
