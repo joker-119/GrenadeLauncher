@@ -44,13 +44,13 @@ namespace GrenadeLauncher
 
 		[ConfigOption] public int Krakatoa = 1;
 		[ConfigOption] public int WorldSpawnCount = 1;
-		[ConfigOption] public int ShellID = 24;
+		[ConfigOption] public int Shell = 24;
 
 		[ConfigOption("ntf_spawn")] public bool NtfSpawn = false;
 		[ConfigOption("ci_spawn")] public bool CiSpawn = true;
 
 		[ConfigOption] public string[] SpawnLocations = { "173" };
-		public bool started = false;
+		public bool Started = false;
 
 
 		public Random Gen = new Random();
@@ -71,14 +71,36 @@ namespace GrenadeLauncher
 
 			Functions = new Methods(this);
 
+			Shell = ConfigManager.Manager.Config.GetIntValue("glauncher_shell", 24);
 			Handler = new CustomWeaponHandler<GrenadeLauncher>(LauncherId)
 			{
-				DefaultType = Functions.GetItemTypeFromId(24),
+				DefaultType = GetItemTypeFromId(Shell),
 				AmmoName = "Launchable Grenades",
 				DefaultReserveAmmo = ReserveAmmo
 			};
 			Handler.Register();
-			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, ShellID, LauncherId, 1));
+			Info("Shell ID: " + Shell + " Type From Shell: " + GetItemTypeFromId(Shell) + " Selected Type: " + Handler.DefaultType);
+			
+			Items.AddRecipe(new Id914Recipe(KnobSetting.FINE, Shell, LauncherId, 1));
+		}
+		
+		public ItemType GetItemTypeFromId(int id)
+		{
+			switch (id)
+			{
+				case 16:
+					return ItemType.MICROHID;
+				case 13:
+					return ItemType.COM15;
+				case 20:
+					return ItemType.E11_STANDARD_RIFLE;
+				case 21:
+					return ItemType.P90;
+				case 23:
+					return ItemType.MP4;
+				default:
+					return ItemType.LOGICER;
+			}
 		}
 	}
 }

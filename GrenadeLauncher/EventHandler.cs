@@ -23,12 +23,12 @@ namespace GrenadeLauncher
 		{
 			if (!plugin.Enabled)
 				PluginManager.Manager.DisablePlugin(plugin);
-			plugin.started = false;
+			plugin.Started = true;
 		}
 
 		public void OnRoundStart(RoundStartEvent ev)
 		{
-			plugin.started = true;
+			plugin.Started = true;
 			RandomItemSpawner ris = Object.FindObjectOfType<RandomItemSpawner>();
 
 			List<SpawnLocation> spawns = new List<SpawnLocation>();
@@ -101,7 +101,7 @@ namespace GrenadeLauncher
 
 		public void OnRoundEnd(RoundEndEvent ev)
 		{
-			plugin.started = false;
+			plugin.Started = false;
 		}
 
 		private const int kWallMask = 1 << 30 | // Lockers
